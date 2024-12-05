@@ -1,192 +1,97 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const port =  process.env.PORT || 5000;
-const app = express();
+require('dotenv').config(); 
+const express = require('express'); 
+const cors = require('cors'); 
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb'); 
+const port = process.env.PORT || 5000;
+const app = express(); 
 
-// middle ware 
+// Middleware to enable CORS and parse JSON data in requests
 app.use(cors());
 app.use(express.json());
 
+// MongoDB connection URI using environment variables for credentials
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.kriop.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
   serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
+    version: ServerApiVersion.v1, 
+    strict: true, 
+    deprecationErrors: true, 
   }
 });
 
+// Async function to run the MongoDB operations
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // Connect to MongoDB server
+    // await client.connect();
 
+    // Define collections in the MongoDB database
     const reviewsCollection = client.db("GameHeavenDB").collection("reviews");
+    const watchListCollection = client.db("GameHeavenDB").collection("watchList");
 
-    //get all data from mongodb
-    app.get('/reviews', async(req, res)=>{
-        const query = reviewsCollection.find();
-        const result = await query.toArray();
-        res.send(result);
-    })
+    // Get all reviews from the 'reviews' collection
+    app.get('/reviews', async (req, res) => {
+      const query = reviewsCollection.find(); 
+      const result = await query.toArray(); 
+      res.send(result); 
+    });
 
-    //  get data from client site and send data to mongodb
-      app.post('/reviews', async (req, res) => {
-        const newReview = req.body;
-        const result = await reviewsCollection.insertOne(newReview);
-        res.send(result);
-      })
+    // Get a specific review by ID from the 'reviews' collection
+    app.get('/reviews/:id', async (req, res) => {
+      const id = req.params.id; 
+      const query = { _id: new ObjectId(id) }; 
+      const result = await reviewsCollection.findOne(query); 
+      res.send(result); 
+    });
 
+    // Get reviews based on user email from the 'reviews' collection
+    app.get('/myReviews/:email', async (req, res) => {
+      const userEmail = req.params.email; 
+      const query = { email: userEmail }; 
+      const result = await reviewsCollection.find(query).toArray();
+      res.send(result); 
+    });
 
-    // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
+    // Add a new review to the 'reviews' collection
+    app.post('/reviews', async (req, res) => {
+      const newReview = req.body; 
+      const result = await reviewsCollection.insertOne(newReview); 
+      res.send(result); 
+    });
+
+    // Get all watchlist items from the 'watchList' collection
+    app.get('/watchLists', async (req, res) => {
+      const result = await watchListCollection.find().toArray(); 
+      res.send(result); 
+    });
+
+    // Add a new watchlist item to the 'watchList' collection
+    app.post('/watchLists', async (req, res) => {
+      const newList = req.body; 
+      console.log(newList);
+      const result = await watchListCollection.insertOne(newList); 
+      res.send(result); 
+    });
+
+    // Send a ping to confirm MongoDB connection success
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+    // Ensure that the client will close when the operation finishes or encounters an error
+    // await client.close(); // Optionally close the connection
   }
 }
-run().catch(console.dir);
 
+// Run the async function to connect to MongoDB and handle requests
+run().catch(console.dir); // Catch any errors during connection or operations
 
+// Root endpoint to check if the server is running
+app.get('/', (req, res) => {
+  res.send('Server is running....');
+});
 
-// async function run() {
-//     try {
-//       // Connect the client to the server	(optional starting in v4.7)
-//       // await client.connect();
-  
-//       // coffee card section
-//       const db = client.db('coffeeDB');
-//       const coffeeCollection = db.collection('coffee');
-  
-//       // userInfo
-//       const userCollection = client.db('coffeeDB').collection('users');
-  
-  
-//       // get all the data from mongodb and send to client site
-//       app.get('/coffee', async (req, res) => {
-//         const cursor = coffeeCollection.find();
-//         const result = await cursor.toArray();
-//         res.send(result);
-//       })
-  
-  
-//       //get a specific data and send to client site
-//       app.get('/coffee/:id', async (req, res) => {
-//         const id = req.params.id;
-//         const query = { _id: new ObjectId(id) }
-//         const result = await coffeeCollection.findOne(query);
-//         res.send(result);
-//       })
-  
-  
-//       // update a specific data 
-//       app.put('/coffee/:id', async (req, res) => {
-//         const id = req.params.id;
-//         const filter = { _id: new ObjectId(id) };
-//         const options = { upsert: true };
-//         const coffee = req.body;
-//         const updatedCoffee = {
-//           $set: {
-//             name: coffee.name,
-//             chef: coffee.chef,
-//             supplier: coffee.supplier,
-//             taste: coffee.taste,
-//             category: coffee.category,
-//             details: coffee.details,
-//             photoURL: coffee.photoURL
-//           }
-//         }
-  
-//         const result = await coffeeCollection.updateOne(filter, updatedCoffee, options);
-//         res.send(result);
-  
-  
-//       })
-  
-//       // get data from client site and send data to mongodb
-//       app.post('/coffee', async (req, res) => {
-//         const newCoffey = req.body;
-//         const result = await coffeeCollection.insertOne(newCoffey);
-//         res.send(result);
-//       })
-  
-//       //delete a specific data
-//       app.delete('/coffee/:id', async (req, res) => {
-//         const id = req.params.id;
-//         const query = { _id: new ObjectId(id) };
-//         const result = await coffeeCollection.deleteOne(query);
-//         console.log(result);
-//         res.send(result);
-//       })
-  
-  
-//       // -------- Users Related api -------------
-  
-  
-//       app.get('/users/:id', async(req, res)=>{
-//           const id = req.params.id;
-//           const query = {_id: new ObjectId(id)};
-//           const result = await userCollection.findOne(query);
-//           res.send(result);
-//       })
-  
-//       app.get('/users', async(req, res)=>{
-//         const cursor = userCollection.find();
-//         const result = await cursor.toArray();
-//         res.send(result);
-//       })
-  
-  
-//       //get data from client side
-//       app.post('/users', async(req, res)=>{
-//         const newUser = req.body;
-//         const result = await userCollection.insertOne(newUser);
-//         res.send(result);
-//       })
-  
-  
-//       app.patch('/users/:email', async(req, res)=>{
-//         const email = req.params.email;
-//         const filter = {email};
-//         const updatedDoc = {
-//           $set:{
-//             lastLogIn: req.body?.lastLogIn
-//           }
-//         }
-  
-//         const result = await userCollection.updateOne(filter, updatedDoc);
-//         res.send(result);
-//       })
-  
-//       // delete a data from db
-//       app.delete('/users/:id', async(req, res)=>{
-//         const id = req.params.id;
-//         const query = {_id: new ObjectId(id)};
-//         console.log(query)
-//         const result = await userCollection.deleteOne(query);
-//         res.send(result);
-//       })
-  
-//       // Send a ping to confirm a successful connection
-//       await client.db("admin").command({ ping: 1 });
-//       console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//     } finally {
-//       // Ensures that the client will close when you finish/error
-//       // await client.close();
-//     }
-//   }
-// run().catch(console.dir);
-
-
-app.get('/', (req, res)=>{
-    res.send('Server is running....');
-})
-
-app.listen(port, ()=>{
-    console.log(`Server is running at port: ${port}`);
-})
+// Start the server and listen on the specified port
+app.listen(port, () => {
+  console.log(`Server is running at port: ${port}`);
+});
