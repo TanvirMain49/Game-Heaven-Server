@@ -1,9 +1,9 @@
-require('dotenv').config(); 
-const express = require('express'); 
-const cors = require('cors'); 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb'); 
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
-const app = express(); 
+const app = express();
 
 // Middleware to enable CORS and parse JSON data in requests
 app.use(cors());
@@ -15,9 +15,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri, {
   serverApi: {
-    version: ServerApiVersion.v1, 
-    strict: true, 
-    deprecationErrors: true, 
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
   }
 });
 
@@ -31,48 +31,84 @@ async function run() {
     const reviewsCollection = client.db("GameHeavenDB").collection("reviews");
     const watchListCollection = client.db("GameHeavenDB").collection("watchList");
 
+    // Get all watchList items from the 'watchList' collection
+    app.get('/watchLists', async (req, res) => {
+      const result = await watchListCollection.find().toArray();
+      res.send(result);
+    });
+
     // Get all reviews from the 'reviews' collection
     app.get('/reviews', async (req, res) => {
-      const query = reviewsCollection.find(); 
-      const result = await query.toArray(); 
-      res.send(result); 
+      const query = reviewsCollection.find();
+      const result = await query.toArray();
+      res.send(result);
     });
 
     // Get a specific review by ID from the 'reviews' collection
     app.get('/reviews/:id', async (req, res) => {
-      const id = req.params.id; 
-      const query = { _id: new ObjectId(id) }; 
-      const result = await reviewsCollection.findOne(query); 
-      res.send(result); 
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewsCollection.findOne(query);
+      res.send(result);
     });
 
     // Get reviews based on user email from the 'reviews' collection
     app.get('/myReviews/:email', async (req, res) => {
-      const userEmail = req.params.email; 
-      const query = { email: userEmail }; 
+      const userEmail = req.params.email;
+      const query = { email: userEmail };
       const result = await reviewsCollection.find(query).toArray();
-      res.send(result); 
+      res.send(result);
     });
 
     // Add a new review to the 'reviews' collection
     app.post('/reviews', async (req, res) => {
-      const newReview = req.body; 
-      const result = await reviewsCollection.insertOne(newReview); 
-      res.send(result); 
+      const newReview = req.body;
+      const result = await reviewsCollection.insertOne(newReview);
+      res.send(result);
     });
 
-    // Get all watchlist items from the 'watchList' collection
-    app.get('/watchLists', async (req, res) => {
-      const result = await watchListCollection.find().toArray(); 
-      res.send(result); 
-    });
+    // update a review card
+    app.put('/updateReview/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const review = req.body;
+      console.log(review);
+      const updatedReview = {
+        $set: {
+          userName: review.userName,
+          email: review.email,
+          title: review.title,
+          image: review.image,
+          rating: review.rating,
+          publishingYear: review.publishingYear,
+          genre: review.genre,
+          description: review.description,
+        }
+      }
+      const result = await reviewsCollection.updateOne(filter, updatedReview, options);
+      res.send(result);
+    })
 
-    // Add a new watchlist item to the 'watchList' collection
+    //delete a review from review data base
+    app.delete('/reviews/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      console.log(query);
+      const result = await reviewsCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+    // ----------------------------------Watch List------------------------------->
+
+    // Add a new watchList item to the 'watchList' collection
     app.post('/watchLists', async (req, res) => {
-      const newList = req.body; 
+      const newList = req.body;
       console.log(newList);
-      const result = await watchListCollection.insertOne(newList); 
-      res.send(result); 
+      const result = await watchListCollection.insertOne(newList);
+      res.send(result);
     });
 
     // Send a ping to confirm MongoDB connection success
