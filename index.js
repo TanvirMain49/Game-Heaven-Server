@@ -31,11 +31,6 @@ async function run() {
     const reviewsCollection = client.db("GameHeavenDB").collection("reviews");
     const watchListCollection = client.db("GameHeavenDB").collection("watchList");
 
-    // Get all watchList items from the 'watchList' collection
-    app.get('/watchLists', async (req, res) => {
-      const result = await watchListCollection.find().toArray();
-      res.send(result);
-    });
 
     // Get all reviews from the 'reviews' collection
     app.get('/reviews', async (req, res) => {
@@ -103,11 +98,28 @@ async function run() {
 
     // ----------------------------------Watch List------------------------------->
 
+    // Get all watchList items from the 'watchList' collection
+    app.get('/watchLists/:email', async (req, res) => {
+      const email = req.params.email;
+      try{
+        const userWatchList = await watchListCollection.findOne({email})
+        res.send(userWatchList);
+      }
+      catch(error){
+        console.log(error);
+        res.status(500).send({error:"Failed to fetch watchList"})
+      }
+    });
+
     // Add a new watchList item to the 'watchList' collection
     app.post('/watchLists', async (req, res) => {
       const newList = req.body;
-      console.log(newList);
-      const result = await watchListCollection.insertOne(newList);
+      const { email } = newList;
+      const result = await watchListCollection.updateOne(
+        { email },
+        { $addToSet: { watchList: newList } },
+        { upsert: true }
+      );
       res.send(result);
     });
 
