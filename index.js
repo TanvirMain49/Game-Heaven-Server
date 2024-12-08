@@ -39,6 +39,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/reviews/rating', async (req, res) => {
+      const query = reviewsCollection.find().sort({rating: -1});
+      const result = await query.toArray();
+      res.send(result);
+    });
+
     // Get a specific review by ID from the 'reviews' collection
     app.get('/reviews/:id', async (req, res) => {
       const id = req.params.id;
