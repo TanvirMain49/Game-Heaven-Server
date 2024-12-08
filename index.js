@@ -88,7 +88,6 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const review = req.body;
-      console.log(review);
       const updatedReview = {
         $set: {
           userName: review.userName,
