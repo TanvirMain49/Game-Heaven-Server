@@ -4,7 +4,6 @@ Welcome to the **Game Heaven Server** repository! This is the backend API for th
 
 ## Features
 
-- **User Authentication**: Secure sign-up and login functionality.
 - **Game Database**: Manage information about games, reviews, and ratings.
 - **Game Reviews**: Users can leave feedback on their favorite games.
 - **Watchlist**: Users can add games to their personal watchlist.
@@ -15,8 +14,6 @@ Welcome to the **Game Heaven Server** repository! This is the backend API for th
 - **Node.js**: Server-side JavaScript runtime.
 - **Express.js**: Web framework for building the API.
 - **MongoDB**: NoSQL database to store game and user data.
-- **JWT Authentication**: For secure authentication and authorization.
-- **Mongoose**: For interacting with MongoDB.
 
 ## Client Side Repository
 
