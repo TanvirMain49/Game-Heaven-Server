@@ -2,7 +2,6 @@
 
 Welcome to the **Game Heaven Server** repository! This is the backend API for the **Game Heaven** project, which is a platform for managing game-related data and interactions.
 
-
 ## Features
 
 - **User Authentication**: Secure sign-up and login functionality.
@@ -19,6 +18,18 @@ Welcome to the **Game Heaven Server** repository! This is the backend API for th
 - **JWT Authentication**: For secure authentication and authorization.
 - **Mongoose**: For interacting with MongoDB.
 
-### Changes made:
-1. **Client Side Repository**: [https://github.com/TanvirMain49/Game-Heaven-Client]()
-2. **Live Website Link**: [https://game-heaven-1117d.web.app/]()
+## Client Side Repository
+
+The client-side of the **Game Heaven** project can be found in the following repository:
+
+- [Game Heaven Client Repository](https://github.com/TanvirMain49/Game-Heaven-Client)
+
+## Live Website
+
+The live website for **Game Heaven** is available at:
+
+- [Game Heaven Live](https://game-heaven-1117d.web.app/)
+
+---
+
+Thank you for checking out **Game Heaven Server**! We hope you enjoy contributing and using the API. Happy coding!
