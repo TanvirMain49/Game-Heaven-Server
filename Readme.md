@@ -20,5 +20,5 @@ Welcome to the **Game Heaven Server** repository! This is the backend API for th
 - **Mongoose**: For interacting with MongoDB.
 
 ### Changes made:
-1. **Client Side Repository**: [](https://github.com/TanvirMain49/Game-Heaven-Client)
-2. **Live Website Link**: [](https://game-heaven-1117d.web.app/)
+1. **Client Side Repository**: [https://github.com/TanvirMain49/Game-Heaven-Client]()
+2. **Live Website Link**: [https://game-heaven-1117d.web.app/]()
