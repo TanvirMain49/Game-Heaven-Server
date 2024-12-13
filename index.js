@@ -84,7 +84,6 @@ async function run() {
     // update a review card
     app.put('/updateReview/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const review = req.body;
@@ -108,7 +107,6 @@ async function run() {
     app.delete('/reviews/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      console.log(query);
       const result = await reviewsCollection.deleteOne(query);
       res.send(result);
     })
@@ -124,7 +122,6 @@ async function run() {
         res.send(userWatchList);
       }
       catch(error){
-        console.log(error);
         res.status(500).send({error:"Failed to fetch watchList"})
       }
     });
@@ -142,7 +139,7 @@ async function run() {
     });
 
     // Send a ping to confirm MongoDB connection success
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensure that the client will close when the operation finishes or encounters an error
     // await client.close(); // Optionally close the connection
