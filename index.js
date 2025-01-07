@@ -41,7 +41,7 @@ async function run() {
 
     //sort reviews data by rating in ascending order
     app.get('/reviews/home', async (req, res) => {
-      const query = reviewsCollection.find().sort({rating: -1}).limit(6);
+      const query = reviewsCollection.find().sort({rating: -1}).limit(4);
       const result = await query.toArray();
       res.send(result);
     });
